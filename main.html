@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Open Fencing Championship</title>
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #F0D98A;
+    --gold-dark: #8B6914;
+    --navy: #0D1B2A;
+    --navy-mid: #1A2E45;
+    --navy-light: #2A4A6B;
+    --white: #FFFFFF;
+    --off-white: #F5F3EE;
+    --gray: #9AA0A8;
+    --gray-light: #E8E6E1;
+    --danger: #C0392B;
+    --success: #1A6B45;
+    --stripe-blue: #635BFF;
+    --text-main: #1A1A1A;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: var(--navy);
+    color: var(--white);
+    min-height: 100vh;
+  }
+
+  /* BACKDROP */
+  #backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background: var(--navy);
+    background-image: none;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+  }
+  #backdrop::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(13,27,42,0.55) 0%, rgba(13,27,42,0.82) 60%, rgba(13,27,42,0.97) 100%);
+  }
+
+  #page-wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 1.5rem 4rem;
+  }
+
+  /* HEADER */
+  header {
+    text-align: center;
+    padding: 5rem 0 2.5rem;
+    border-bottom: 1px solid rgba(201,168,76,0.3);
+    margin-bottom: 3rem;
+  }
+
+  .crest {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    letter-spacing: 0.15em;
+    color: var(--gold);
+  }
+
+  header h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--white);
+    text-transform: uppercase;
+    line-height: 1.2;
+  }
+
+  header .subtitle {
+    font-size: 1rem;
+    color: var(--gold-light);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-top: 0.75rem;
+    font-style: italic;
+  }
+
+  .event-meta {
+    display: flex;
+    justify-content: center;
+    gap: 2.5rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    text-align: center;
+  }
+
+  .meta-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-family: 'Arial', sans-serif;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  .meta-value {
+    font-size: 1rem;
+    color: var(--white);
+  }
+
+  /* SECTIONS */
+  section {
+    margin-bottom: 3rem;
+  }
+
+  .section-title {
+    font-size: 0.75rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-family: 'Arial', sans-serif;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(201,168,76,0.25);
+  }
+
+  /* REGISTRATION STATUS BANNER */
+  #reg-status-banner {
+    padding: 1rem 1.5rem;
+    border-radius: 6px;
+    font-family: 'Arial', sans-serif;
+    font-size: 0.95rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    letter-spacing: 0.03em;
+  }
+
+  #reg-status-banner.closed {
+    background: rgba(192,57,43,0.15);
+    border: 1px solid rgba(192,57,43,0.4);
+    color: #F08080;
+  }
+
+  #reg-status-banner.open {
+    background: rgba(26,107,69,0.2);
+    border: 1px solid rgba(26,107,69,0.5);
+    color: #72D9A8;
+  }
+
+  #reg-status-banner.early-bird {
+    background: rgba(201,168,76,0.15);
+    border: 1px solid rgba(201,168,76,0.4);
+    color: var(--gold-light);
+  }
+
+  /* PRICING CARDS */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .price-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 8px;
+    padding: 1.25rem;
+  }
+
+  .price-card .ptype {
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-family: 'Arial', sans-serif;
+    margin-bottom: 0.5rem;
+  }
+
+  .price-card .amount {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .price-card .amount span {
+    font-size: 1rem;
+    color: var(--gray);
+    font-weight: 400;
+  }
+
+  .price-card .early {
+    font-size: 0.8rem;
+    color: var(--gold-light);
+    margin-top: 0.4rem;
+    font-family: 'Arial', sans-serif;
+    font-style: italic;
+  }
+
+  .price-card .strikethrough {
+    text-decoration: line-through;
+    color: var(--gray);
+    font-size: 1.1rem;
+    margin-right: 0.3rem;
+  }
+
+  /* FORM */
+  .reg-form {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 10px;
+    padding: 2rem;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .form-row.single { grid-template-columns: 1fr; }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  label {
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    font-family: 'Arial', sans-serif;
+  }
+
+  input, select, textarea {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 5px;
+    color: var(--white);
+    font-family: 'Arial', sans-serif;
+    font-size: 0.9rem;
+    padding: 0.6rem 0.85rem;
+    transition: border-color 0.2s;
+    outline: none;
+    -webkit-appearance: none;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--gold);
+    background: rgba(255,255,255,0.1);
+  }
+
+  select option { background: var(--navy-mid); color: var(--white); }
+
+  /* PAYMENT SECTION */
+  .payment-toggle {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .pay-btn {
+    flex: 1;
+    min-width: 160px;
+    padding: 0.85rem 1rem;
+    border-radius: 7px;
+    border: 1.5px solid rgba(201,168,76,0.3);
+    background: transparent;
+    color: var(--white);
+    font-family: 'Arial', sans-serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .pay-btn.active {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.12);
+  }
+
+  .pay-btn .pay-name { font-weight: 600; font-size: 1rem; }
+  .pay-btn .pay-sub { font-size: 0.72rem; color: var(--gray); }
+
+  #paynow-panel, #stripe-panel { display: none; }
+  #paynow-panel.active, #stripe-panel.active { display: block; }
+
+  .paynow-box {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+
+  .paynow-qr {
+    width: 160px;
+    height: 160px;
+    background: white;
+    border-radius: 6px;
+    margin: 0 auto 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--navy);
+    font-size: 0.75rem;
+    font-family: 'Arial', sans-serif;
+    text-align: center;
+    padding: 0.5rem;
+  }
+
+  .paynow-uen {
+    font-family: 'Arial', sans-serif;
+    font-size: 1rem;
+    color: var(--gold-light);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+  }
+
+  .paynow-note {
+    font-size: 0.8rem;
+    color: var(--gray);
+    font-family: 'Arial', sans-serif;
+  }
+
+  .stripe-notice {
+    background: rgba(99,91,255,0.12);
+    border: 1px solid rgba(99,91,255,0.35);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+    font-family: 'Arial', sans-serif;
+    font-size: 0.85rem;
+    color: #C0BAFF;
+    line-height: 1.6;
+  }
+
+  .stripe-notice strong { color: #A89FFF; }
+
+  .stripe-fee-breakdown {
+    background: rgba(255,255,255,0.04);
+    border-radius: 5px;
+    padding: 0.75rem 1rem;
+    margin-top: 0.75rem;
+    font-size: 0.82rem;
+  }
+
+  .fee-line {
+    display: flex;
+    justify-content: space-between;
+    padding: 2px 0;
+    color: #B0AAFF;
+  }
+
+  .fee-total {
+    border-top: 1px solid rgba(99,91,255,0.3);
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    font-weight: 600;
+    color: #E0DCFF;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 1rem;
+    border-radius: 7px;
+    border: none;
+    font-family: 'Arial', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    margin-top: 1.5rem;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+
+  .submit-btn.paynow-submit {
+    background: var(--gold);
+    color: var(--navy);
+  }
+
+  .submit-btn.paynow-submit:hover { background: var(--gold-light); }
+
+  .submit-btn.stripe-submit {
+    background: var(--stripe-blue);
+    color: white;
+  }
+
+  .submit-btn.stripe-submit:hover { background: #5248F0; }
+
+  .submit-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* FORM CLOSED OVERLAY */
+  #form-closed-overlay {
+    display: none;
+    text-align: center;
+    padding: 3rem 1.5rem;
+    font-family: 'Arial', sans-serif;
+  }
+
+  #form-closed-overlay .closed-icon { font-size: 3rem; margin-bottom: 1rem; }
+  #form-closed-overlay h3 { font-size: 1.3rem; margin-bottom: 0.5rem; color: var(--white); }
+  #form-closed-overlay p { color: var(--gray); font-size: 0.9rem; line-height: 1.6; }
+
+  /* SUCCESS */
+  #success-screen {
+    display: none;
+    text-align: center;
+    padding: 2.5rem 1rem;
+    font-family: 'Arial', sans-serif;
+  }
+
+  #success-screen .check { font-size: 3.5rem; color: #72D9A8; margin-bottom: 1rem; }
+  #success-screen h3 { font-size: 1.4rem; margin-bottom: 0.5rem; }
+  #success-screen p { color: var(--gray); font-size: 0.9rem; line-height: 1.6; }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 2rem 0;
+    font-family: 'Arial', sans-serif;
+    font-size: 0.8rem;
+    color: var(--gray);
+    border-top: 1px solid rgba(255,255,255,0.07);
+    margin-top: 3rem;
+  }
+
+  @media (max-width: 580px) {
+    .form-row { grid-template-columns: 1fr; }
+    .pricing-grid { grid-template-columns: 1fr 1fr; }
+    .event-meta { gap: 1.5rem; }
+    header { padding: 3rem 0 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<div id="backdrop"></div>
+
+<div id="page-wrap">
+
+  <header>
+    <div class="crest">⚔</div>
+    <h1 id="event-title">Open Fencing Championship</h1>
+    <div class="subtitle" id="event-edition">Annual Open Invitational</div>
+    <div class="event-meta">
+      <div class="meta-item">
+        <span class="meta-label">Date</span>
+        <span class="meta-value" id="event-date">TBA</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Venue</span>
+        <span class="meta-value" id="event-venue">TBA</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Weapons</span>
+        <span class="meta-value">Foil · Épée · Sabre</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- REGISTRATION STATUS -->
+  <div id="reg-status-banner" class="closed">
+    ⚑ Registration is currently closed. Check back soon.
+  </div>
+
+  <!-- PRICING -->
+  <section>
+    <div class="section-title">Registration Fees</div>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="ptype">Individual</div>
+        <div class="amount" id="display-individual">
+          <span class="strikethrough" id="disp-ind-strike" style="display:none"></span>
+          <span id="disp-ind-val">S$XX</span>
+          <span>/ person</span>
+        </div>
+        <div class="early" id="early-ind-note" style="display:none"></div>
+      </div>
+      <div class="price-card">
+        <div class="ptype">Team</div>
+        <div class="amount" id="display-team">
+          <span class="strikethrough" id="disp-team-strike" style="display:none"></span>
+          <span id="disp-team-val">S$XX</span>
+          <span>/ team</span>
+        </div>
+        <div class="early" id="early-team-note" style="display:none"></div>
+      </div>
+    </div>
+    <p style="font-family:'Arial',sans-serif;font-size:0.8rem;color:var(--gray);line-height:1.6;">
+      Local participants (Singapore) pay via PayNow at no extra cost. Foreign participants pay via Stripe — a processing fee applies and is borne by the registrant.
+    </p>
+  </section>
+
+  <!-- REGISTRATION FORM -->
+  <section>
+    <div class="section-title">Register</div>
+
+    <div id="form-closed-overlay">
+      <div class="closed-icon">🔒</div>
+      <h3>Registration Not Yet Open</h3>
+      <p>Sign-ups are currently closed.<br>Please check back when the registration period begins.</p>
+    </div>
+
+    <div id="success-screen">
+      <div class="check">✓</div>
+      <h3>Registration Received</h3>
+      <p id="success-msg">Thank you! Your registration has been received.<br>A confirmation will be sent to your email.</p>
+    </div>
+
+    <div class="reg-form" id="reg-form-wrap">
+      <form id="reg-form" novalidate>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="f-firstname">First Name *</label>
+            <input type="text" id="f-firstname" placeholder="Given name" required>
+          </div>
+          <div class="form-group">
+            <label for="f-lastname">Last Name *</label>
+            <input type="text" id="f-lastname" placeholder="Family name" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="f-email">Email *</label>
+            <input type="email" id="f-email" placeholder="your@email.com" required>
+          </div>
+          <div class="form-group">
+            <label for="f-phone">Phone Number *</label>
+            <input type="tel" id="f-phone" placeholder="+65 XXXX XXXX" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="f-nationality">Nationality *</label>
+            <select id="f-nationality" required>
+              <option value="">Select…</option>
+              <option value="SG">🇸🇬 Singaporean / PR</option>
+              <option value="foreign">🌏 Foreign</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="f-country">Country / Club</label>
+            <input type="text" id="f-country" placeholder="e.g. Malaysia / AFA">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="f-weapon">Weapon *</label>
+            <select id="f-weapon" required>
+              <option value="">Select…</option>
+              <option value="foil">Foil</option>
+              <option value="epee">Épée</option>
+              <option value="sabre">Sabre</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="f-category">Category *</label>
+            <select id="f-category" required>
+              <option value="">Select…</option>
+              <option value="individual">Individual</option>
+              <option value="team">Team</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row single" id="team-name-row" style="display:none">
+          <div class="form-group">
+            <label for="f-teamname">Team Name *</label>
+            <input type="text" id="f-teamname" placeholder="e.g. SSC Foil A">
+          </div>
+        </div>
+
+        <div class="form-row single">
+          <div class="form-group">
+            <label for="f-remarks">Special Remarks</label>
+            <textarea id="f-remarks" rows="2" placeholder="Dietary needs, accessibility requirements, etc." style="resize:vertical;"></textarea>
+          </div>
+        </div>
+
+        <!-- PRICE SUMMARY -->
+        <div id="price-summary" style="background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.15);border-radius:6px;padding:0.9rem 1.1rem;margin:1rem 0;font-family:'Arial',sans-serif;font-size:0.85rem;display:none;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <span style="color:var(--gray)">Category</span>
+            <span id="sum-cat" style="color:var(--white)"></span>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <span style="color:var(--gray)">Base fee</span>
+            <span id="sum-base" style="color:var(--white)"></span>
+          </div>
+          <div style="display:flex;justify-content:space-between;color:var(--gold-light);font-size:0.8rem;margin-bottom:4px;" id="sum-early-row" style="display:none">
+            <span>Early bird saving</span>
+            <span id="sum-early-saving"></span>
+          </div>
+          <div style="display:flex;justify-content:space-between;" id="sum-stripe-row" style="display:none">
+            <span style="color:var(--gray)">Stripe fee (~3.4% + S$0.50)</span>
+            <span id="sum-stripe-fee" style="color:#C0BAFF"></span>
+          </div>
+          <div style="border-top:1px solid rgba(255,255,255,0.1);margin-top:0.5rem;padding-top:0.5rem;display:flex;justify-content:space-between;font-weight:600;">
+            <span>Total</span>
+            <span id="sum-total" style="color:var(--gold-light)"></span>
+          </div>
+        </div>
+
+        <!-- PAYMENT -->
+        <div id="payment-section" style="display:none">
+          <div class="section-title" style="margin-top:1.5rem;">Payment Method</div>
+
+          <div class="payment-toggle">
+            <button type="button" class="pay-btn active" id="btn-paynow" onclick="selectPayment('paynow')">
+              <span class="pay-name">PayNow</span>
+              <span class="pay-sub">For Singapore residents</span>
+            </button>
+            <button type="button" class="pay-btn" id="btn-stripe" onclick="selectPayment('stripe')">
+              <span class="pay-name">Credit / Debit Card</span>
+              <span class="pay-sub">Stripe — for foreign registrants</span>
+            </button>
+          </div>
+
+          <!-- PAYNOW -->
+          <div id="paynow-panel" class="active">
+            <div class="paynow-box">
+              <div class="paynow-qr" id="paynow-qr-area">
+                <span>[Your PayNow QR<br>will appear here]<br><br>Set CFG.uen in index.html</span>
+              </div>
+              <div class="paynow-uen">UEN: <span id="display-uen">—</span></div>
+              <div class="paynow-note">
+                Transfer the exact amount shown above.<br>
+                Use your <strong>full name</strong> as the payment reference.
+              </div>
+            </div>
+            <button type="submit" class="submit-btn paynow-submit" id="paynow-submit-btn">
+              Submit Registration →
+            </button>
+          </div>
+
+          <!-- STRIPE -->
+          <div id="stripe-panel">
+            <div class="stripe-notice">
+              <strong>Processing fee notice.</strong> Foreign registrants are charged via Stripe. A processing fee of approximately <strong>3.4% + S$0.50</strong> is added to your registration fee and is borne by you as the registrant. The exact amount is shown below.
+              <div class="stripe-fee-breakdown">
+                <div class="fee-line"><span>Registration fee</span><span id="sf-base">—</span></div>
+                <div class="fee-line"><span>Stripe processing fee</span><span id="sf-fee">—</span></div>
+                <div class="fee-total"><span>You will be charged</span><span id="sf-total">—</span></div>
+              </div>
+            </div>
+            <button type="button" class="submit-btn stripe-submit" id="stripe-submit-btn" onclick="handleStripeSubmit()">
+              Pay via Stripe →
+            </button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section>
+    <div class="section-title">About the Event</div>
+    <p id="event-desc" style="font-family:'Arial',sans-serif;font-size:0.92rem;color:rgba(255,255,255,0.75);line-height:1.8;">
+      An annual invitational fencing competition open to both local and foreign fencers across all three weapons — Foil, Épée, and Sabre. The event welcomes individual and team entries, and aims to foster sporting exchange between Singapore and the region.
+    </p>
+  </section>
+
+  <footer>
+    <p>© <span id="footer-year"></span> Open Fencing Championship · All Rights Reserved</p>
+    <p style="margin-top:0.4rem;">Questions? Contact us at <span id="contact-email" style="color:var(--gold-light);">contact@yourclub.sg</span></p>
+  </footer>
+
+</div><!-- end page-wrap -->
+
+
+<script>
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║                        ★  EDIT THIS SECTION  ★                            ║
+// ║  All site settings live here. Change values and push to GitHub to update.  ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+const CFG = {
+
+  // ── REGISTRATION STATUS ───────────────────────────────────────────────────
+  // Set to true to open registration, false to close it
+  regOpen: true,
+
+  // Set to true during early bird period (shows discounted prices)
+  earlyBird: false,
+
+  // ── PRICES (SGD) ──────────────────────────────────────────────────────────
+  indNormal:  50,    // Individual — normal price
+  indEarly:   40,    // Individual — early bird price
+  teamNormal: 120,   // Team       — normal price
+  teamEarly:  100,   // Team       — early bird price
+
+  // ── EVENT DETAILS ─────────────────────────────────────────────────────────
+  date:  'TBA',                    // e.g. '15 March 2026'
+  venue: 'TBA',                    // e.g. 'OCBC Arena, Singapore'
+  email: 'contact@yourclub.sg',    // Contact email shown in footer
+
+  // ── PAYNOW ────────────────────────────────────────────────────────────────
+  uen: '',   // Your club UEN, e.g. 'T08SS0123A'
+
+  // ── STRIPE ────────────────────────────────────────────────────────────────
+  // Create a Payment Link at https://dashboard.stripe.com/payment-links
+  // Paste the full URL here, e.g. 'https://buy.stripe.com/test_abc123'
+  stripeLink: '',
+
+  // ── BACKDROP IMAGE ────────────────────────────────────────────────────────
+  // Upload your image to the same GitHub repo, then set the filename here.
+  // e.g. 'backdrop.jpg'  (file must be in the same folder as index.html)
+  // Leave as '' for a plain dark background.
+  backdropImage: '',
+
+};
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║                    END OF EDITABLE SETTINGS                                ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
+function loadConfig() {
+  if (CFG.backdropImage) {
+    applyBackdrop(CFG.backdropImage);
+  }
+}
+
+function applyConfig() {
+  // Status banner
+  const banner = document.getElementById('reg-status-banner');
+  const formWrap = document.getElementById('reg-form-wrap');
+  const closedOverlay = document.getElementById('form-closed-overlay');
+  const successScr = document.getElementById('success-screen');
+
+  if (CFG.regOpen) {
+    if (CFG.earlyBird) {
+      banner.className = 'early-bird';
+      banner.textContent = '★ Early Bird Registration is OPEN — sign up now for discounted rates!';
+    } else {
+      banner.className = 'open';
+      banner.textContent = '✓ Registration is OPEN — secure your spot today!';
+    }
+    formWrap.style.display = 'block';
+    closedOverlay.style.display = 'none';
+  } else {
+    banner.className = 'closed';
+    banner.textContent = '⚑ Registration is currently closed. Check back soon.';
+    formWrap.style.display = 'none';
+    closedOverlay.style.display = 'block';
+  }
+
+  // Prices
+  const iPrice = CFG.earlyBird ? CFG.indEarly  : CFG.indNormal;
+  const tPrice = CFG.earlyBird ? CFG.teamEarly : CFG.teamNormal;
+
+  document.getElementById('disp-ind-val').textContent   = 'S$' + iPrice;
+  document.getElementById('disp-team-val').textContent  = 'S$' + tPrice;
+
+  if (CFG.earlyBird) {
+    document.getElementById('disp-ind-strike').style.display  = '';
+    document.getElementById('disp-ind-strike').textContent    = 'S$' + CFG.indNormal;
+    document.getElementById('disp-team-strike').style.display = '';
+    document.getElementById('disp-team-strike').textContent   = 'S$' + CFG.teamNormal;
+    document.getElementById('early-ind-note').style.display   = '';
+    document.getElementById('early-ind-note').textContent     = '↓ Early bird: save S$' + (CFG.indNormal - CFG.indEarly);
+    document.getElementById('early-team-note').style.display  = '';
+    document.getElementById('early-team-note').textContent    = '↓ Early bird: save S$' + (CFG.teamNormal - CFG.teamEarly);
+  } else {
+    document.getElementById('disp-ind-strike').style.display  = 'none';
+    document.getElementById('disp-team-strike').style.display = 'none';
+    document.getElementById('early-ind-note').style.display   = 'none';
+    document.getElementById('early-team-note').style.display  = 'none';
+  }
+
+  // Meta
+  document.getElementById('event-date').textContent  = CFG.date;
+  document.getElementById('event-venue').textContent = CFG.venue;
+  document.getElementById('contact-email').textContent = CFG.email;
+
+  // UEN
+  document.getElementById('display-uen').textContent = CFG.uen || '—';
+  if (CFG.uen) {
+    document.getElementById('paynow-qr-area').innerHTML =
+      '<div style="font-size:0.72rem;color:var(--navy);text-align:center;padding:0.5rem;">' +
+      'Scan to pay via PayNow<br><br><strong style="font-size:1rem;">UEN:<br>' + CFG.uen + '</strong></div>';
+  }
+
+  // Footer year
+  document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+  updatePriceSummary();
+}
+
+// ── FORM LOGIC ───────────────────────────────────────────────────────────────
+document.getElementById('f-category').addEventListener('change', function() {
+  document.getElementById('team-name-row').style.display = this.value === 'team' ? 'grid' : 'none';
+  updatePriceSummary();
+});
+
+document.getElementById('f-nationality').addEventListener('change', function() {
+  const isForeign = this.value === 'foreign';
+  // Auto-suggest payment
+  if (isForeign) selectPayment('stripe');
+  else selectPayment('paynow');
+  updatePriceSummary();
+});
+
+function currentBaseFee() {
+  const cat = document.getElementById('f-category').value;
+  if (!cat) return null;
+  if (cat === 'individual') return CFG.earlyBird ? CFG.indEarly : CFG.indNormal;
+  return CFG.earlyBird ? CFG.teamEarly : CFG.teamNormal;
+}
+
+function stripeFee(base) {
+  return parseFloat((base * 0.034 + 0.50).toFixed(2));
+}
+
+function updatePriceSummary() {
+  const base = currentBaseFee();
+  const summary = document.getElementById('price-summary');
+  const payment = document.getElementById('payment-section');
+  const cat = document.getElementById('f-category').value;
+  const nationality = document.getElementById('f-nationality').value;
+  const isForeign = nationality === 'foreign';
+
+  if (!base || !cat || !nationality) {
+    summary.style.display = 'none';
+    payment.style.display = 'none';
+    return;
+  }
+
+  summary.style.display = 'block';
+  payment.style.display = 'block';
+
+  const normalFee = cat === 'individual' ? CFG.indNormal : CFG.teamNormal;
+  const sFee = isForeign ? stripeFee(base) : 0;
+  const total = base + sFee;
+
+  document.getElementById('sum-cat').textContent   = cat.charAt(0).toUpperCase() + cat.slice(1);
+  document.getElementById('sum-base').textContent  = 'S$' + base.toFixed(2);
+
+  const earlyRow = document.getElementById('sum-early-row');
+  if (CFG.earlyBird && base < normalFee) {
+    earlyRow.style.display = 'flex';
+    document.getElementById('sum-early-saving').textContent = '−S$' + (normalFee - base).toFixed(2);
+  } else {
+    earlyRow.style.display = 'none';
+  }
+
+  const stripeRow = document.getElementById('sum-stripe-row');
+  if (isForeign) {
+    stripeRow.style.display = 'flex';
+    document.getElementById('sum-stripe-fee').textContent = '+S$' + sFee.toFixed(2);
+  } else {
+    stripeRow.style.display = 'none';
+  }
+
+  document.getElementById('sum-total').textContent = 'S$' + total.toFixed(2);
+
+  // Stripe panel fee breakdown
+  document.getElementById('sf-base').textContent  = 'S$' + base.toFixed(2);
+  document.getElementById('sf-fee').textContent   = 'S$' + sFee.toFixed(2);
+  document.getElementById('sf-total').textContent = 'S$' + total.toFixed(2);
+
+  // Lock payment method for foreigners
+  const btnPaynow = document.getElementById('btn-paynow');
+  btnPaynow.disabled = isForeign;
+  btnPaynow.style.opacity = isForeign ? '0.35' : '1';
+  if (isForeign) selectPayment('stripe');
+}
+
+// ── PAYMENT TOGGLE ────────────────────────────────────────────────────────────
+let activePayment = 'paynow';
+
+function selectPayment(method) {
+  activePayment = method;
+  document.getElementById('btn-paynow').classList.toggle('active', method === 'paynow');
+  document.getElementById('btn-stripe').classList.toggle('active', method === 'stripe');
+  document.getElementById('paynow-panel').classList.toggle('active', method === 'paynow');
+  document.getElementById('stripe-panel').classList.toggle('active', method === 'stripe');
+}
+
+// ── FORM SUBMIT (PAYNOW) ─────────────────────────────────────────────────────
+document.getElementById('reg-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  if (activePayment !== 'paynow') return;
+  if (!validateForm()) return;
+  showSuccess('paynow');
+});
+
+function handleStripeSubmit() {
+  if (!validateForm()) return;
+  const link = CFG.stripeLink;
+  if (!link) {
+    alert('Stripe Payment Link not configured yet. Please contact the organiser.');
+    return;
+  }
+  // Append metadata via URL params for reference
+  const name = document.getElementById('f-firstname').value + ' ' + document.getElementById('f-lastname').value;
+  const email = document.getElementById('f-email').value;
+  const url = link + (link.includes('?') ? '&' : '?') +
+    'prefilled_email=' + encodeURIComponent(email) +
+    '&client_reference_id=' + encodeURIComponent(name.replace(/ /g,'_'));
+  window.open(url, '_blank');
+  showSuccess('stripe');
+}
+
+function validateForm() {
+  const fields = ['f-firstname','f-lastname','f-email','f-phone','f-nationality','f-weapon','f-category'];
+  let ok = true;
+  fields.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el.value) {
+      el.style.borderColor = 'rgba(192,57,43,0.7)';
+      ok = false;
+    } else {
+      el.style.borderColor = '';
+    }
+  });
+  if (!ok) { alert('Please fill in all required fields.'); return false; }
+
+  const cat = document.getElementById('f-category').value;
+  if (cat === 'team' && !document.getElementById('f-teamname').value) {
+    alert('Please enter a team name.');
+    document.getElementById('f-teamname').style.borderColor = 'rgba(192,57,43,0.7)';
+    return false;
+  }
+  return true;
+}
+
+function showSuccess(method) {
+  document.getElementById('reg-form-wrap').style.display = 'none';
+  const ss = document.getElementById('success-screen');
+  ss.style.display = 'block';
+  const name = document.getElementById('f-firstname').value;
+  if (method === 'paynow') {
+    document.getElementById('success-msg').innerHTML =
+      'Thank you, ' + name + '! Your registration form has been submitted.<br>' +
+      'Please complete your PayNow transfer to UEN <strong>' + (CFG.uen||'—') + '</strong> and use your full name as the reference.<br>' +
+      'We\'ll confirm your spot once payment is received.';
+  } else {
+    document.getElementById('success-msg').innerHTML =
+      'Thank you, ' + name + '! You\'ve been redirected to Stripe to complete payment.<br>' +
+      'Your registration will be confirmed once payment is processed.';
+  }
+}
+
+// ── BACKDROP ──────────────────────────────────────────────────────────────────
+function applyBackdrop(filename) {
+  document.getElementById('backdrop').style.backgroundImage = 'url(' + filename + ')';
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+loadConfig();
+applyConfig();
+</script>
+</body>
+</html>
