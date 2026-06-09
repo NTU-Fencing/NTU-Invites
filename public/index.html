@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Open Fencing Championship — Registration</title>
+<style>
+  /* ── TOKENS ───────────────────────────────────────────────── */
+  :root {
+    --gold:        #C9A84C;
+    --gold-light:  #F0D98A;
+    --gold-dim:    rgba(201,168,76,0.18);
+    --navy:        #0D1B2A;
+    --navy-mid:    #1A2E45;
+    --navy-card:   rgba(255,255,255,0.04);
+    --white:       #FFFFFF;
+    --gray:        #8A9199;
+    --red:         #C0392B;
+    --green:       #1A6B45;
+    --stripe:      #635BFF;
+    --border:      rgba(201,168,76,0.22);
+    --border-soft: rgba(255,255,255,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: var(--navy);
+    color: var(--white);
+    min-height: 100vh;
+  }
+
+  /* ── BACKDROP ─────────────────────────────────────────────── */
+  #backdrop {
+    position: fixed; inset: 0; z-index: 0;
+    background: var(--navy);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+  }
+  #backdrop::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg,
+      rgba(13,27,42,0.5) 0%,
+      rgba(13,27,42,0.8) 55%,
+      rgba(13,27,42,0.97) 100%);
+  }
+
+  /* ── LAYOUT ───────────────────────────────────────────────── */
+  #wrap {
+    position: relative; z-index: 1;
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 0 1.5rem 5rem;
+  }
+
+  /* ── HEADER ───────────────────────────────────────────────── */
+  header {
+    text-align: center;
+    padding: 5rem 0 2.5rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 3rem;
+  }
+
+  .crest { font-size: 2.8rem; color: var(--gold); margin-bottom: 1rem; }
+
+  header h1 {
+    font-size: clamp(1.9rem, 5vw, 3rem);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    line-height: 1.2;
+  }
+
+  .subtitle {
+    font-size: 0.9rem;
+    color: var(--gold-light);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-top: 0.6rem;
+    font-style: italic;
+  }
+
+  .event-meta {
+    display: flex;
+    justify-content: center;
+    gap: 2.5rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .meta-label {
+    display: block;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-family: 'Arial', sans-serif;
+    margin-bottom: 0.2rem;
+  }
+
+  .meta-value { font-size: 0.95rem; }
+
+  /* ── STATUS BANNER ────────────────────────────────────────── */
+  .banner {
+    padding: 0.9rem 1.25rem;
+    border-radius: 6px;
+    font-family: 'Arial', sans-serif;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-bottom: 2.5rem;
+    letter-spacing: 0.02em;
+  }
+  .banner.closed    { background: rgba(192,57,43,0.12); border: 1px solid rgba(192,57,43,0.35); color: #F08080; }
+  .banner.open      { background: rgba(26,107,69,0.15); border: 1px solid rgba(26,107,69,0.4);  color: #72D9A8; }
+  .banner.early     { background: rgba(201,168,76,0.12); border: 1px solid rgba(201,168,76,0.35); color: var(--gold-light); }
+
+  /* ── SECTION TITLE ────────────────────────────────────────── */
+  .section-title {
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-family: 'Arial', sans-serif;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1.25rem;
+  }
+
+  /* ── PRICING CARDS ────────────────────────────────────────── */
+  .price-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .price-card {
+    background: var(--navy-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.1rem 1.25rem;
+  }
+
+  .price-type {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-family: 'Arial', sans-serif;
+    margin-bottom: 0.4rem;
+  }
+
+  .price-amount {
+    font-size: 1.9rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .price-unit { font-size: 0.85rem; color: var(--gray); font-weight: 400; }
+  .price-strike { text-decoration: line-through; color: var(--gray); font-size: 1.1rem; margin-right: 0.3rem; }
+  .price-early { font-size: 0.75rem; color: var(--gold-light); font-family: 'Arial', sans-serif; margin-top: 0.35rem; font-style: italic; }
+
+  /* ── FORM CARD ────────────────────────────────────────────── */
+  .form-card {
+    background: var(--navy-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 2rem;
+  }
+
+  /* ── STEP INDICATOR ───────────────────────────────────────── */
+  .steps {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 2rem;
+    font-family: 'Arial', sans-serif;
+  }
+
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gray);
+    transition: color 0.3s;
+  }
+
+  .step.active { color: var(--gold-light); }
+  .step.done   { color: var(--gold); }
+
+  .step-num {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    border: 1.5px solid currentColor;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    transition: all 0.3s;
+  }
+
+  .step.done .step-num {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--navy);
+  }
+
+  .step.active .step-num {
+    border-color: var(--gold-light);
+    color: var(--gold-light);
+  }
+
+  .step-divider {
+    flex: 1;
+    height: 1px;
+    background: var(--border-soft);
+    margin: 0 0.75rem;
+  }
+
+  /* ── FORM FIELDS ──────────────────────────────────────────── */
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .field-row.full { grid-template-columns: 1fr; }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  label {
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    font-family: 'Arial', sans-serif;
+  }
+
+  input, select {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: var(--white);
+    font-family: 'Arial', sans-serif;
+    font-size: 0.88rem;
+    padding: 0.6rem 0.85rem;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+    -webkit-appearance: none;
+    width: 100%;
+  }
+
+  input:focus, select:focus {
+    border-color: var(--gold);
+    background: rgba(255,255,255,0.09);
+  }
+
+  input.invalid { border-color: rgba(192,57,43,0.7) !important; }
+
+  select option { background: var(--navy-mid); }
+
+  /* ── PRICE SUMMARY ────────────────────────────────────────── */
+  .price-summary {
+    background: rgba(201,168,76,0.06);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.9rem 1.1rem;
+    font-family: 'Arial', sans-serif;
+    font-size: 0.83rem;
+    margin: 1.25rem 0 0;
+  }
+
+  .sum-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 0;
+    color: var(--gray);
+  }
+
+  .sum-row span:last-child { color: var(--white); }
+  .sum-row.saving span:last-child { color: var(--gold-light); }
+  .sum-row.stripe-fee span:last-child { color: #C0BAFF; }
+
+  .sum-total {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid var(--border-soft);
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+
+  .sum-total span:last-child { color: var(--gold-light); }
+
+  /* ── PAYMENT STEP ─────────────────────────────────────────── */
+  .pay-toggle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .pay-opt {
+    padding: 1rem;
+    border-radius: 7px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    color: var(--white);
+    font-family: 'Arial', sans-serif;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+  }
+
+  .pay-opt:hover { border-color: rgba(201,168,76,0.5); }
+  .pay-opt.active { border-color: var(--gold); background: var(--gold-dim); }
+  .pay-opt .pay-name { font-size: 0.95rem; font-weight: 700; display: block; margin-bottom: 2px; }
+  .pay-opt .pay-desc { font-size: 0.72rem; color: var(--gray); }
+
+  /* PayNow panel */
+  .paynow-box {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    margin-bottom: 1.25rem;
+  }
+
+  .paynow-qr {
+    width: 148px; height: 148px;
+    background: white;
+    border-radius: 6px;
+    margin: 0 auto 1rem;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--navy);
+    font-size: 0.7rem;
+    font-family: 'Arial', sans-serif;
+    padding: 0.5rem;
+    text-align: center;
+  }
+
+  .paynow-uen { font-family: 'Arial', sans-serif; font-size: 0.95rem; color: var(--gold-light); margin-bottom: 0.4rem; }
+  .paynow-note { font-size: 0.78rem; color: var(--gray); font-family: 'Arial', sans-serif; line-height: 1.6; }
+
+  .txn-field { margin-bottom: 0; }
+
+  /* Stripe panel */
+  .stripe-info {
+    background: rgba(99,91,255,0.1);
+    border: 1px solid rgba(99,91,255,0.3);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+    font-family: 'Arial', sans-serif;
+    font-size: 0.83rem;
+    color: #C0BAFF;
+    line-height: 1.65;
+  }
+
+  .stripe-info strong { color: #A89FFF; }
+
+  .stripe-breakdown {
+    margin-top: 0.75rem;
+    background: rgba(255,255,255,0.04);
+    border-radius: 5px;
+    padding: 0.7rem 0.9rem;
+    font-size: 0.8rem;
+  }
+
+  .stripe-breakdown .sum-row { color: #B0AAFF; }
+  .stripe-breakdown .sum-row span:last-child { color: #B0AAFF; }
+  .stripe-breakdown .sum-total { color: #E0DCFF; }
+  .stripe-breakdown .sum-total span:last-child { color: #E0DCFF; }
+
+  /* ── BUTTONS ──────────────────────────────────────────────── */
+  .btn {
+    width: 100%;
+    padding: 0.95rem;
+    border-radius: 7px;
+    border: none;
+    font-family: 'Arial', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    position: relative;
+  }
+
+  .btn-gold   { background: var(--gold); color: var(--navy); }
+  .btn-gold:hover   { background: var(--gold-light); }
+  .btn-stripe { background: var(--stripe); color: white; }
+  .btn-stripe:hover { background: #5248F0; }
+  .btn-ghost  { background: transparent; border: 1px solid var(--border); color: var(--gray); margin-top: 0.75rem; }
+  .btn-ghost:hover  { border-color: var(--gold); color: var(--gold-light); }
+
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(0,0,0,0.2);
+    border-top-color: rgba(0,0,0,0.6);
+    border-radius: 50%;
+    animation: spin 0.65s linear infinite;
+    display: none;
+  }
+  .btn.loading .spinner { display: block; }
+  .btn.loading .btn-text { opacity: 0.7; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── INLINE ALERTS ────────────────────────────────────────── */
+  .alert {
+    display: none;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    font-family: 'Arial', sans-serif;
+    font-size: 0.83rem;
+    line-height: 1.55;
+    margin-top: 1rem;
+  }
+  .alert.error   { background: rgba(192,57,43,0.12); border: 1px solid rgba(192,57,43,0.35); color: #F08080; }
+  .alert.warning { background: rgba(201,168,76,0.1);  border: 1px solid rgba(201,168,76,0.3);  color: var(--gold-light); }
+  .alert.info    { background: rgba(26,107,69,0.12);  border: 1px solid rgba(26,107,69,0.35);  color: #72D9A8; }
+
+  /* ── SUCCESS SCREEN ───────────────────────────────────────── */
+  #success-screen {
+    display: none;
+    text-align: center;
+    padding: 2.5rem 1rem;
+    font-family: 'Arial', sans-serif;
+  }
+
+  .success-icon { font-size: 3.5rem; color: #72D9A8; margin-bottom: 1rem; }
+  #success-screen h3 { font-size: 1.3rem; margin-bottom: 0.5rem; }
+  #success-screen p  { color: var(--gray); font-size: 0.88rem; line-height: 1.7; }
+
+  /* ── CLOSED STATE ─────────────────────────────────────────── */
+  #closed-state {
+    display: none;
+    text-align: center;
+    padding: 3rem 1.5rem;
+    font-family: 'Arial', sans-serif;
+  }
+  #closed-state .closed-icon { font-size: 2.8rem; margin-bottom: 1rem; }
+  #closed-state h3 { font-size: 1.2rem; margin-bottom: 0.5rem; }
+  #closed-state p  { color: var(--gray); font-size: 0.88rem; line-height: 1.6; }
+
+  /* ── ABOUT ────────────────────────────────────────────────── */
+  .about-text {
+    font-family: 'Arial', sans-serif;
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.85;
+  }
+
+  /* ── FOOTER ───────────────────────────────────────────────── */
+  footer {
+    text-align: center;
+    padding: 2rem 0;
+    font-family: 'Arial', sans-serif;
+    font-size: 0.78rem;
+    color: var(--gray);
+    border-top: 1px solid var(--border-soft);
+    margin-top: 3rem;
+  }
+
+  footer a { color: var(--gold-light); text-decoration: none; }
+
+  /* ── RESPONSIVE ───────────────────────────────────────────── */
+  @media (max-width: 560px) {
+    .field-row   { grid-template-columns: 1fr; }
+    .price-grid  { grid-template-columns: 1fr 1fr; }
+    .pay-toggle  { grid-template-columns: 1fr; }
+    .event-meta  { gap: 1.5rem; }
+    header       { padding: 3rem 0 2rem; }
+    .form-card   { padding: 1.25rem; }
+    .steps .step-label { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="backdrop"></div>
+
+<div id="wrap">
+
+  <!-- HEADER -->
+  <header>
+    <div class="crest">⚔</div>
+    <h1 id="hd-title">Open Fencing Championship</h1>
+    <div class="subtitle" id="hd-edition">Annual Open Invitational</div>
+    <div class="event-meta">
+      <div>
+        <span class="meta-label">Date</span>
+        <span class="meta-value" id="hd-date">TBA</span>
+      </div>
+      <div>
+        <span class="meta-label">Venue</span>
+        <span class="meta-value" id="hd-venue">TBA</span>
+      </div>
+      <div>
+        <span class="meta-label">Weapons</span>
+        <span class="meta-value">Foil · Épée · Sabre</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- STATUS BANNER -->
+  <div id="status-banner" class="banner closed">⚑ Registration is currently closed. Check back soon.</div>
+
+  <!-- PRICING -->
+  <section style="margin-bottom:3rem;">
+    <div class="section-title">Registration Fees</div>
+    <div class="price-grid">
+      <div class="price-card">
+        <div class="price-type">Individual</div>
+        <div class="price-amount">
+          <span class="price-strike" id="ind-strike" style="display:none"></span><span id="ind-val">S$—</span>
+          <span class="price-unit"> / person</span>
+        </div>
+        <div class="price-early" id="ind-early" style="display:none"></div>
+      </div>
+      <div class="price-card">
+        <div class="price-type">Team</div>
+        <div class="price-amount">
+          <span class="price-strike" id="team-strike" style="display:none"></span><span id="team-val">S$—</span>
+          <span class="price-unit"> / team</span>
+        </div>
+        <div class="price-early" id="team-early" style="display:none"></div>
+      </div>
+    </div>
+    <p style="font-family:'Arial',sans-serif;font-size:0.78rem;color:var(--gray);line-height:1.65;margin-top:0.6rem;">
+      Singapore residents pay via PayNow (no extra fee). Foreign participants pay via Stripe — a processing fee of ~3.4% + S$0.50 applies.
+    </p>
+  </section>
+
+  <!-- REGISTRATION -->
+  <section style="margin-bottom:3rem;">
+    <div class="section-title">Register</div>
+
+    <!-- CLOSED -->
+    <div id="closed-state" class="form-card">
+      <div class="closed-icon">🔒</div>
+      <h3>Registration Not Yet Open</h3>
+      <p>Sign-ups are currently closed.<br>Please check back when the registration period begins.</p>
+    </div>
+
+    <!-- SUCCESS -->
+    <div id="success-screen" class="form-card">
+      <div class="success-icon">✓</div>
+      <h3>Registration Received</h3>
+      <p id="success-msg"></p>
+    </div>
+
+    <!-- FORM -->
+    <div class="form-card" id="form-card">
+
+      <!-- STEP INDICATOR -->
+      <div class="steps" id="step-indicator">
+        <div class="step active" id="step-1-ind">
+          <div class="step-num">1</div>
+          <span class="step-label">Participant Info</span>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step" id="step-2-ind">
+          <div class="step-num">2</div>
+          <span class="step-label">Payment</span>
+        </div>
+      </div>
+
+      <form id="reg-form" novalidate>
+
+        <!-- ── STEP 1: PARTICIPANT INFO ── -->
+        <div id="step-1">
+
+          <div class="field-row">
+            <div class="field">
+              <label for="f-first">First Name *</label>
+              <input type="text" id="f-first" placeholder="Given name" required>
+            </div>
+            <div class="field">
+              <label for="f-last">Last Name *</label>
+              <input type="text" id="f-last" placeholder="Family name" required>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="f-email">Email *</label>
+              <input type="email" id="f-email" placeholder="you@email.com" required>
+            </div>
+            <div class="field">
+              <label for="f-phone">Phone *</label>
+              <input type="tel" id="f-phone" placeholder="+65 XXXX XXXX" required>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="f-nationality">Nationality *</label>
+              <select id="f-nationality" required>
+                <option value="">Select…</option>
+                <option value="SG">🇸🇬 Singaporean / PR</option>
+                <option value="foreign">🌏 Foreign</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="f-country">Country / Club</label>
+              <input type="text" id="f-country" placeholder="e.g. Malaysia / AFA">
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="f-weapon">Weapon *</label>
+              <select id="f-weapon" required>
+                <option value="">Select…</option>
+                <option value="Foil">Foil</option>
+                <option value="Épée">Épée</option>
+                <option value="Sabre">Sabre</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="f-category">Category *</label>
+              <select id="f-category" required>
+                <option value="">Select…</option>
+                <option value="individual">Individual</option>
+                <option value="team">Team</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-row full" id="team-name-row" style="display:none">
+            <div class="field">
+              <label for="f-teamname">Team Name *</label>
+              <input type="text" id="f-teamname" placeholder="e.g. SSC Foil A">
+            </div>
+          </div>
+
+          <!-- Price summary appears once category + nationality are selected -->
+          <div id="price-summary" class="price-summary" style="display:none">
+            <div class="sum-row"><span>Category</span><span id="sum-cat"></span></div>
+            <div class="sum-row"><span>Base fee</span><span id="sum-base"></span></div>
+            <div class="sum-row saving" id="sum-saving-row" style="display:none">
+              <span>Early bird saving</span><span id="sum-saving"></span>
+            </div>
+            <div class="sum-row stripe-fee" id="sum-stripe-row" style="display:none">
+              <span>Stripe fee (~3.4% + S$0.50)</span><span id="sum-stripe-fee"></span>
+            </div>
+            <div class="sum-total"><span>Total</span><span id="sum-total"></span></div>
+          </div>
+
+          <button type="button" class="btn btn-gold" id="btn-to-payment" style="margin-top:1.5rem;" onclick="goToPayment()">
+            <span class="btn-text">Continue to Payment →</span>
+            <span class="spinner"></span>
+          </button>
+
+        </div><!-- end step-1 -->
+
+        <!-- ── STEP 2: PAYMENT ── -->
+        <div id="step-2" style="display:none">
+
+          <!-- Registrant summary pill -->
+          <div id="reg-summary" style="background:rgba(255,255,255,0.04);border:1px solid var(--border-soft);border-radius:6px;padding:0.75rem 1rem;margin-bottom:1.5rem;font-family:'Arial',sans-serif;font-size:0.82rem;color:var(--gray);line-height:1.6;">
+          </div>
+
+          <!-- Payment method toggle -->
+          <div class="pay-toggle" id="pay-toggle">
+            <button type="button" class="pay-opt active" id="opt-paynow" onclick="selectPay('paynow')">
+              <span class="pay-name">PayNow</span>
+              <span class="pay-desc">Singapore residents · No extra fee</span>
+            </button>
+            <button type="button" class="pay-opt" id="opt-stripe" onclick="selectPay('stripe')">
+              <span class="pay-name">Credit / Debit Card</span>
+              <span class="pay-desc">Stripe · ~3.4% + S$0.50 fee</span>
+            </button>
+          </div>
+
+          <!-- ── PAYNOW PANEL ── -->
+          <div id="panel-paynow">
+            <div class="paynow-box">
+              <div class="paynow-qr" id="paynow-qr">
+                <span style="text-align:center">Set <code>uen</code> in<br>config.js</span>
+              </div>
+              <div class="paynow-uen">UEN: <span id="paynow-uen-display">—</span></div>
+              <div class="paynow-note">
+                Transfer the exact amount shown in your fee summary.<br>
+                Use your <strong>full name</strong> as the payment reference.
+              </div>
+            </div>
+
+            <div class="field txn-field">
+              <label for="f-txnref">PayNow Transaction Reference *</label>
+              <input type="text" id="f-txnref"
+                placeholder="e.g. ENETS20240412123456 or last 6 digits"
+                autocomplete="off">
+              <span style="font-size:0.72rem;color:var(--gray);font-family:'Arial',sans-serif;margin-top:0.3rem;display:block;">
+                Found in your banking app after the transfer. We'll verify this against our records.
+              </span>
+            </div>
+
+            <button type="submit" class="btn btn-gold" id="btn-paynow-submit" style="margin-top:1.25rem;">
+              <span class="btn-text">Submit Registration →</span>
+              <span class="spinner"></span>
+            </button>
+            <div id="alert-paynow" class="alert error"></div>
+          </div>
+
+          <!-- ── STRIPE PANEL ── -->
+          <div id="panel-stripe" style="display:none">
+            <div class="stripe-info">
+              <strong>How this works:</strong> clicking the button below opens Stripe Checkout in a new tab.
+              Complete your payment there, then return here — this page will detect your payment and submit your registration automatically.
+              <div class="stripe-breakdown" id="stripe-breakdown">
+                <div class="sum-row"><span>Registration fee</span><span id="sb-base">—</span></div>
+                <div class="sum-row"><span>Stripe processing fee</span><span id="sb-fee">—</span></div>
+                <div class="sum-total"><span>You will be charged</span><span id="sb-total">—</span></div>
+              </div>
+            </div>
+
+            <button type="button" class="btn btn-stripe" id="btn-stripe-pay" onclick="handleStripePay()">
+              <span class="btn-text">Pay via Stripe →</span>
+              <span class="spinner"></span>
+            </button>
+
+            <!-- Shown while waiting for Stripe return -->
+            <div id="stripe-waiting" style="display:none;text-align:center;padding:1.25rem;font-family:'Arial',sans-serif;font-size:0.85rem;color:var(--gray);">
+              ⏳ Waiting for payment confirmation…
+              <br><span style="font-size:0.75rem;">Return to this tab after completing payment on Stripe.</span>
+            </div>
+
+            <div id="alert-stripe" class="alert error"></div>
+          </div>
+
+          <button type="button" class="btn btn-ghost" onclick="goBack()">← Back to participant info</button>
+
+        </div><!-- end step-2 -->
+
+      </form>
+    </div><!-- end form-card -->
+  </section>
+
+  <!-- ABOUT -->
+  <section style="margin-bottom:3rem;">
+    <div class="section-title">About the Event</div>
+    <p class="about-text">
+      An annual invitational fencing competition open to both local and foreign fencers across all three weapons — Foil, Épée, and Sabre. The event welcomes individual and team entries, and aims to foster sporting exchange between Singapore and the region.
+    </p>
+  </section>
+
+  <footer>
+    <p>© <span id="footer-year"></span> Open Fencing Championship · All Rights Reserved</p>
+    <p style="margin-top:0.35rem;">Questions? <a href="#" id="footer-email">contact@yourclub.sg</a></p>
+  </footer>
+
+</div><!-- end wrap -->
+
+<!-- Load shared config -->
+<script src="/config.js"></script>
+
+<script>
+// ── INIT ──────────────────────────────────────────────────────────────────────
+const C = window.CONFIG;
+
+document.getElementById('hd-title').textContent   = C.eventName;
+document.getElementById('hd-edition').textContent = C.edition;
+document.getElementById('hd-date').textContent    = C.date;
+document.getElementById('hd-venue').textContent   = C.venue;
+document.getElementById('footer-year').textContent = new Date().getFullYear();
+document.getElementById('footer-email').textContent = C.contactEmail;
+document.getElementById('footer-email').href = 'mailto:' + C.contactEmail;
+
+if (C.backdropImage) {
+  document.getElementById('backdrop').style.backgroundImage = 'url(' + C.backdropImage + ')';
+}
+
+// Status banner + form visibility
+const banner = document.getElementById('status-banner');
+const formCard = document.getElementById('form-card');
+const closedState = document.getElementById('closed-state');
+
+if (C.regOpen) {
+  if (C.earlyBird) {
+    banner.className = 'banner early';
+    banner.textContent = '★ Early Bird Registration is OPEN — sign up now for discounted rates!';
+  } else {
+    banner.className = 'banner open';
+    banner.textContent = '✓ Registration is OPEN — secure your spot today!';
+  }
+  formCard.style.display = 'block';
+  closedState.style.display = 'none';
+} else {
+  formCard.style.display = 'none';
+  closedState.style.display = 'block';
+}
+
+// Pricing display
+const iNorm = C.prices.individual.normal;
+const iEarly = C.prices.individual.earlyBird;
+const tNorm = C.prices.team.normal;
+const tEarly = C.prices.team.earlyBird;
+const iPrice = C.earlyBird ? iEarly : iNorm;
+const tPrice = C.earlyBird ? tEarly : tNorm;
+
+document.getElementById('ind-val').textContent  = 'S$' + iPrice;
+document.getElementById('team-val').textContent = 'S$' + tPrice;
+
+if (C.earlyBird) {
+  ['ind-strike','team-strike'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.style.display = '';
+    el.textContent = 'S$' + (i === 0 ? iNorm : tNorm);
+  });
+  document.getElementById('ind-early').style.display  = '';
+  document.getElementById('ind-early').textContent    = '↓ Early bird: save S$' + (iNorm - iEarly);
+  document.getElementById('team-early').style.display = '';
+  document.getElementById('team-early').textContent   = '↓ Early bird: save S$' + (tNorm - tEarly);
+}
+
+// PayNow UEN
+document.getElementById('paynow-uen-display').textContent = C.uen || '—';
+if (C.uen) {
+  document.getElementById('paynow-qr').innerHTML =
+    '<div style="text-align:center;color:var(--navy);padding:0.4rem;font-size:0.7rem;">' +
+    'Scan to pay via PayNow<br><br>' +
+    '<strong style="font-size:0.95rem;">UEN:<br>' + C.uen + '</strong></div>';
+}
+
+// ── PRICE HELPERS ─────────────────────────────────────────────────────────────
+function baseFee() {
+  const cat = document.getElementById('f-category').value;
+  if (!cat) return null;
+  const tier = C.earlyBird ? 'earlyBird' : 'normal';
+  return C.prices[cat][tier];
+}
+
+function stripeFee(base) {
+  return parseFloat((base * 0.034 + 0.50).toFixed(2));
+}
+
+function isForeign() {
+  return document.getElementById('f-nationality').value === 'foreign';
+}
+
+// ── PRICE SUMMARY UPDATE ──────────────────────────────────────────────────────
+function updateSummary() {
+  const base = baseFee();
+  const cat  = document.getElementById('f-category').value;
+  const nat  = document.getElementById('f-nationality').value;
+  const sumEl = document.getElementById('price-summary');
+
+  if (!base || !nat) { sumEl.style.display = 'none'; return; }
+
+  sumEl.style.display = 'block';
+  const foreign = isForeign();
+  const sFee    = foreign ? stripeFee(base) : 0;
+  const total   = base + sFee;
+
+  document.getElementById('sum-cat').textContent  = cat.charAt(0).toUpperCase() + cat.slice(1);
+  document.getElementById('sum-base').textContent = 'S$' + base.toFixed(2);
+
+  // Early bird saving
+  const normFee = cat === 'individual' ? iNorm : tNorm;
+  const savingRow = document.getElementById('sum-saving-row');
+  if (C.earlyBird && base < normFee) {
+    savingRow.style.display = 'flex';
+    document.getElementById('sum-saving').textContent = '−S$' + (normFee - base).toFixed(2);
+  } else {
+    savingRow.style.display = 'none';
+  }
+
+  // Stripe fee row
+  const stripeRow = document.getElementById('sum-stripe-row');
+  if (foreign) {
+    stripeRow.style.display = 'flex';
+    document.getElementById('sum-stripe-fee').textContent = '+S$' + sFee.toFixed(2);
+  } else {
+    stripeRow.style.display = 'none';
+  }
+
+  document.getElementById('sum-total').textContent = 'S$' + total.toFixed(2);
+
+  // Stripe breakdown panel
+  document.getElementById('sb-base').textContent  = 'S$' + base.toFixed(2);
+  document.getElementById('sb-fee').textContent   = 'S$' + sFee.toFixed(2);
+  document.getElementById('sb-total').textContent = 'S$' + total.toFixed(2);
+}
+
+document.getElementById('f-category').addEventListener('change', function () {
+  document.getElementById('team-name-row').style.display = this.value === 'team' ? 'grid' : 'none';
+  updateSummary();
+});
+
+document.getElementById('f-nationality').addEventListener('change', function () {
+  if (this.value === 'foreign') {
+    selectPay('stripe');
+    // Disable PayNow option for foreign
+    const paynowOpt = document.getElementById('opt-paynow');
+    paynowOpt.disabled = true;
+    paynowOpt.style.opacity = '0.35';
+  } else {
+    const paynowOpt = document.getElementById('opt-paynow');
+    paynowOpt.disabled = false;
+    paynowOpt.style.opacity = '1';
+    selectPay('paynow');
+  }
+  updateSummary();
+});
+
+// ── STEP NAVIGATION ───────────────────────────────────────────────────────────
+function goToPayment() {
+  if (!validateStep1()) return;
+  // Set registrant summary
+  const name = document.getElementById('f-first').value + ' ' + document.getElementById('f-last').value;
+  const cat  = document.getElementById('f-category').value;
+  const weapon = document.getElementById('f-weapon').value;
+  const base = baseFee();
+  const foreign = isForeign();
+  const sFee = foreign ? stripeFee(base) : 0;
+  document.getElementById('reg-summary').innerHTML =
+    '<strong style="color:var(--white);">' + name + '</strong> · ' + weapon + ' · ' +
+    cat.charAt(0).toUpperCase() + cat.slice(1) +
+    ' · <span style="color:var(--gold-light);">S$' + (base + sFee).toFixed(2) + ' total</span>';
+
+  // Auto-select payment based on nationality
+  if (foreign) selectPay('stripe');
+  else selectPay('paynow');
+
+  document.getElementById('step-1').style.display = 'none';
+  document.getElementById('step-2').style.display = 'block';
+
+  // Update step indicator
+  document.getElementById('step-1-ind').className = 'step done';
+  document.getElementById('step-2-ind').className = 'step active';
+}
+
+function goBack() {
+  document.getElementById('step-2').style.display = 'none';
+  document.getElementById('step-1').style.display = 'block';
+  document.getElementById('step-1-ind').className = 'step active';
+  document.getElementById('step-2-ind').className = 'step';
+  hideAlerts();
+}
+
+// ── PAYMENT TOGGLE ────────────────────────────────────────────────────────────
+let activePay = 'paynow';
+
+function selectPay(method) {
+  activePay = method;
+  document.getElementById('opt-paynow').classList.toggle('active', method === 'paynow');
+  document.getElementById('opt-stripe').classList.toggle('active', method === 'stripe');
+  document.getElementById('panel-paynow').style.display = method === 'paynow' ? 'block' : 'none';
+  document.getElementById('panel-stripe').style.display = method === 'stripe' ? 'block' : 'none';
+  hideAlerts();
+}
+
+function hideAlerts() {
+  ['alert-paynow','alert-stripe'].forEach(id => {
+    document.getElementById(id).style.display = 'none';
+  });
+}
+
+function showAlert(id, msg, type = 'error') {
+  const el = document.getElementById(id);
+  el.className = 'alert ' + type;
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+// ── VALIDATION ────────────────────────────────────────────────────────────────
+function validateStep1() {
+  const required = ['f-first','f-last','f-email','f-phone','f-nationality','f-weapon','f-category'];
+  let ok = true;
+  required.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el.value.trim()) { el.classList.add('invalid'); ok = false; }
+    else el.classList.remove('invalid');
+  });
+  if (!ok) { alert('Please fill in all required fields.'); return false; }
+
+  if (document.getElementById('f-category').value === 'team') {
+    const tn = document.getElementById('f-teamname');
+    if (!tn.value.trim()) {
+      tn.classList.add('invalid');
+      alert('Please enter a team name.');
+      return false;
+    }
+    tn.classList.remove('invalid');
+  }
+  return true;
+}
+
+// ── BUILD PAYLOAD ─────────────────────────────────────────────────────────────
+function buildPayload(extras = {}) {
+  const base    = baseFee();
+  const foreign = isForeign();
+  const sFee    = foreign ? stripeFee(base) : 0;
+  return {
+    timestamp:     new Date().toISOString(),
+    firstName:     document.getElementById('f-first').value.trim(),
+    lastName:      document.getElementById('f-last').value.trim(),
+    email:         document.getElementById('f-email').value.trim(),
+    phone:         document.getElementById('f-phone').value.trim(),
+    nationality:   document.getElementById('f-nationality').value,
+    countryClub:   document.getElementById('f-country').value.trim(),
+    weapon:        document.getElementById('f-weapon').value,
+    category:      document.getElementById('f-category').value,
+    teamName:      document.getElementById('f-teamname').value.trim(),
+    baseFee:       base,
+    stripeFee:     sFee,
+    totalFee:      parseFloat((base + sFee).toFixed(2)),
+    earlyBird:     C.earlyBird ? 'Yes' : 'No',
+    ...extras
+  };
+}
+
+// ── PAYNOW SUBMIT ─────────────────────────────────────────────────────────────
+document.getElementById('reg-form').addEventListener('submit', async function (e) {
+  e.preventDefault();
+  if (activePay !== 'paynow') return;
+
+  const txnRef = document.getElementById('f-txnref').value.trim();
+  if (!txnRef) {
+    document.getElementById('f-txnref').classList.add('invalid');
+    showAlert('alert-paynow', 'Please enter your PayNow transaction reference before submitting.');
+    return;
+  }
+  document.getElementById('f-txnref').classList.remove('invalid');
+
+  const btn = document.getElementById('btn-paynow-submit');
+  btn.classList.add('loading');
+  btn.disabled = true;
+  hideAlerts();
+
+  const payload = buildPayload({
+    paymentMethod: 'PayNow',
+    paymentStatus: 'Pending — awaiting manual verification',
+    transactionRef: txnRef,
+    stripeSessionId: ''
+  });
+
+  const result = await submitRegistration(payload);
+
+  btn.classList.remove('loading');
+  btn.disabled = false;
+
+  if (result.ok) {
+    showSuccess('paynow', payload);
+  } else {
+    showAlert('alert-paynow',
+      '⚠ Could not save your registration. Please email us at ' + C.contactEmail + ' with your details.');
+  }
+});
+
+// ── STRIPE FLOW ───────────────────────────────────────────────────────────────
+let stripeSessionId = null;
+let stripePolling   = null;
+
+async function handleStripePay() {
+  const btn = document.getElementById('btn-stripe-pay');
+  btn.classList.add('loading');
+  btn.disabled = true;
+  hideAlerts();
+
+  // Create a Stripe Checkout session via our API function
+  const base    = baseFee();
+  const foreign = isForeign();
+  const sFee    = foreign ? stripeFee(base) : 0;
+  const total   = Math.round((base + sFee) * 100); // cents
+
+  try {
+    const res = await fetch('/api/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        amountCents:  total,
+        email:        document.getElementById('f-email').value.trim(),
+        name:         document.getElementById('f-first').value.trim() + ' ' +
+                      document.getElementById('f-last').value.trim(),
+        category:     document.getElementById('f-category').value,
+        weapon:       document.getElementById('f-weapon').value,
+        successUrl:   window.location.origin + window.location.pathname + '?stripe_session={CHECKOUT_SESSION_ID}',
+        cancelUrl:    window.location.href
+      })
+    });
+
+    if (!res.ok) throw new Error('API error ' + res.status);
+    const data = await res.json();
+    stripeSessionId = data.sessionId;
+
+    // Open Stripe in new tab
+    window.open(data.url, '_blank');
+
+    // Show waiting state
+    btn.style.display = 'none';
+    document.getElementById('stripe-waiting').style.display = 'block';
+
+    // Poll for completion
+    startStripePolling(stripeSessionId, buildPayload({
+      paymentMethod:   'Stripe',
+      paymentStatus:   'Confirmed — Stripe payment received',
+      transactionRef:  '',
+      stripeSessionId: stripeSessionId
+    }));
+
+  } catch (err) {
+    btn.classList.remove('loading');
+    btn.disabled = false;
+    showAlert('alert-stripe', '⚠ Could not start Stripe checkout. Please try again or contact ' + C.contactEmail);
+  }
+}
+
+function startStripePolling(sessionId, payload) {
+  let attempts = 0;
+  const MAX = 60; // poll for up to 5 minutes (5s intervals)
+
+  stripePolling = setInterval(async () => {
+    attempts++;
+    if (attempts > MAX) {
+      clearInterval(stripePolling);
+      document.getElementById('stripe-waiting').style.display = 'none';
+      document.getElementById('btn-stripe-pay').style.display = 'block';
+      document.getElementById('btn-stripe-pay').classList.remove('loading');
+      document.getElementById('btn-stripe-pay').disabled = false;
+      showAlert('alert-stripe',
+        'Payment confirmation timed out. If you completed payment, please email ' +
+        C.contactEmail + ' with your Stripe receipt.');
+      return;
+    }
+
+    try {
+      const res  = await fetch('/api/verify-stripe?session=' + encodeURIComponent(sessionId));
+      const data = await res.json();
+      if (data.paid) {
+        clearInterval(stripePolling);
+        // Submit registration to Excel
+        const result = await submitRegistration({
+          ...payload,
+          stripeSessionId: sessionId
+        });
+        if (result.ok) {
+          showSuccess('stripe', payload);
+        } else {
+          document.getElementById('stripe-waiting').style.display = 'none';
+          document.getElementById('btn-stripe-pay').style.display = 'block';
+          document.getElementById('btn-stripe-pay').classList.remove('loading');
+          document.getElementById('btn-stripe-pay').disabled = false;
+          showAlert('alert-stripe',
+            '⚠ Payment received but registration could not be saved. Please email ' +
+            C.contactEmail + ' with your Stripe receipt number: ' + sessionId);
+        }
+      }
+    } catch (e) {
+      // Ignore transient errors, keep polling
+    }
+  }, 5000);
+}
+
+// Also check on page load in case they return from Stripe via redirect
+(function checkStripeReturn() {
+  const params = new URLSearchParams(window.location.search);
+  const session = params.get('stripe_session');
+  if (!session || !C.regOpen) return;
+
+  // Clean URL
+  history.replaceState({}, '', window.location.pathname);
+
+  // We don't have form data anymore after redirect — show a message
+  // In practice, use sessionStorage to persist form data across the redirect
+  const saved = sessionStorage.getItem('fencing_reg_payload');
+  if (!saved) return;
+
+  const payload = JSON.parse(saved);
+  payload.stripeSessionId = session;
+  payload.paymentStatus   = 'Confirmed — Stripe payment received';
+
+  // Verify and submit
+  fetch('/api/verify-stripe?session=' + encodeURIComponent(session))
+    .then(r => r.json())
+    .then(async data => {
+      if (data.paid) {
+        const result = await submitRegistration(payload);
+        sessionStorage.removeItem('fencing_reg_payload');
+        if (result.ok) {
+          showSuccess('stripe', payload);
+        }
+      }
+    })
+    .catch(() => {});
+})();
+
+// Save form data to sessionStorage before Stripe redirect (belt + suspenders)
+document.getElementById('btn-stripe-pay') && document.getElementById('btn-stripe-pay')
+  .addEventListener('click', function () {
+    sessionStorage.setItem('fencing_reg_payload', JSON.stringify(buildPayload({
+      paymentMethod: 'Stripe',
+      paymentStatus: 'Confirmed — Stripe payment received',
+      transactionRef: '',
+      stripeSessionId: ''
+    })));
+  }, true);
+
+// ── SUBMIT TO API ─────────────────────────────────────────────────────────────
+async function submitRegistration(payload) {
+  try {
+    const res = await fetch('/api/submit-registration', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    return { ok: res.ok || res.status === 202 };
+  } catch (err) {
+    console.error('submitRegistration failed:', err);
+    return { ok: false };
+  }
+}
+
+// ── SUCCESS ───────────────────────────────────────────────────────────────────
+function showSuccess(method, payload) {
+  clearInterval(stripePolling);
+  document.getElementById('form-card').style.display    = 'none';
+  document.getElementById('success-screen').style.display = 'block';
+
+  const name = payload.firstName;
+  if (method === 'paynow') {
+    document.getElementById('success-msg').innerHTML =
+      'Thank you, <strong>' + name + '</strong>! Your registration has been recorded.<br><br>' +
+      'Please complete your PayNow transfer to UEN <strong>' + (C.uen || '—') + '</strong> ' +
+      'using your full name as the reference.<br>' +
+      'We will confirm your spot once your transaction reference <strong>' +
+      payload.transactionRef + '</strong> is verified.';
+  } else {
+    document.getElementById('success-msg').innerHTML =
+      'Thank you, <strong>' + name + '</strong>! Your payment has been confirmed and your registration is now complete.<br><br>' +
+      'A confirmation will be sent to <strong>' + payload.email + '</strong>.';
+  }
+}
+</script>
+
+</body>
+</html>
